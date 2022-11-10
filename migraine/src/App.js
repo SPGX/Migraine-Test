@@ -14,6 +14,7 @@ export function App() {
   const [migraine90, setMigraine90] = useState([])
   const [migraine180, setMigraine180] = useState([])
   const [isButton, setIsButton] = useState(1)
+  const [color, setColor] = useState([])
   const [mood0, setMood0] = useState(0)
   const [mood1, setMood1] = useState(0)
   const [mood2, setMood2] = useState(0)
@@ -71,20 +72,41 @@ export function App() {
     return data
   }
 
+  const CheckColors = item => {
+    if (item === 0) {
+      return color.push('rgba(37, 172, 103, 1)')
+    }
+    if (item === 1) {
+      return color.push('rgba(0, 76, 146, 1)')
+    }
+    if (item === 2) {
+      return color.push('rgba(255, 218, 112, 1)')
+    }
+    if (item === 3) {
+      return color.push('rgba(255, 129, 68, 1)')
+    }
+  }
+
   const checkMonth = () => {
+    if (color?.length > 1) {
+      setColor([])
+    }
     if (isButton === 1) {
+      migraine.map(item => CheckColors(item?.headache_score))
       return migraine.map(item => item?.headache_score)
     }
     if (isButton === 2) {
-      return migraine90.map(item => item?.headache_score)
+      migraine90.map(item => CheckColors(item?.headache_score))
+      return migraine90.map(item => CheckColors(item?.headache_score))
     }
     if (isButton === 3) {
-      return migraine180.map(item => item?.headache_score)
+      migraine180.map(item => CheckColors(item?.headache_score))
+      return migraine180.map(item => CheckColors(item?.headache_score))
     }
   }
 
   const checkLabels = () => {
-    // if (isButton === 1) {
+    if (isButton === 1) {
       if (isButton === 1) {
         return migraine.map(item => item?.headache_score_date.slice(8, 10))
       }
@@ -94,21 +116,29 @@ export function App() {
       if (isButton === 3) {
         return migraine180.map(item => item?.headache_score_date.slice(8, 10))
       }
-    // }
+    }
 
-    // if (isButton === 2) {
-    //   const months = migraine90.map(item => item?.headache_score_date.slice(5, 7).replace(/^0+/, ''))
-    //   const math = [...new Set(months)]
-    //   const result = math.map(e => moment(e).format('MMM'))
-    //   return result
-    // }
+    if (isButton === 2) {
+      const months = migraine90.map(item => item?.headache_score_date.slice(5, 7).replace(/^0+/, ''))
+      const score = migraine90.map(item => item?.headache_score_date.slice(5, 7).replace(/^0+/, '') === '9')
+      const math = [...new Set(months)]
+      const result = math.map(e => moment(e).format('MMM'))
+      console.log('months >>', months)
+      console.log('score >>', score)
 
-    // if (isButton === 3) {
-    //   const months = migraine180.map(item => item?.headache_score_date.slice(5, 7).replace(/^0+/, ''))
-    //   const math = [...new Set(months)]
-    //   const result = math.map(e => moment(e).format('MMM'))
-    //   return result
-    // }
+      console.log(
+        'result >>',
+        math.map(e => e)
+      )
+      return result
+    }
+
+    if (isButton === 3) {
+      const months = migraine180.map(item => item?.headache_score_date.slice(5, 7).replace(/^0+/, ''))
+      const math = [...new Set(months)]
+      const result = math.map(e => moment(e).format('MMM'))
+      return result
+    }
   }
 
   const getDays = () => {
@@ -158,6 +188,22 @@ export function App() {
     { id: 3, title: '6 เดือน' },
   ]
 
+  // const data = {
+  //   labels: checkLabels(),
+  //   datasets: [
+  //     {
+  //       barPercentage: 0.5,
+  //       barThickness: 10,
+  //       maxBarThickness: 8,
+  //       minBarLength: 2,
+  //       label: 'ระดับความปวด',
+  //       data: checkMonth(),
+  //       backgroundColor: ['rgba(75, 192, 192, 1)'],
+  //       borderWidth: 1,
+  //     },
+  //   ],
+  // }
+
   const data = {
     labels: checkLabels(),
     datasets: [
@@ -168,35 +214,35 @@ export function App() {
         minBarLength: 2,
         label: 'ระดับความปวด',
         data: checkMonth(),
-        backgroundColor: ['rgba(75, 192, 192, 1)'],
+        backgroundColor: color,
         borderWidth: 1,
       },
     ],
   }
 
-  // const data90 = {
-  //   labels: checkLabels(),
-  //   datasets: [
-  //     {
-  //       label: 'ระดับความปวด',
-  //       data: [1, 2, 3, 4, 5, 6],
-  //       backgroundColor: ['rgba(75, 192, 192, 1)'],
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // }
+  const data90 = {
+    labels: checkLabels(),
+    datasets: [
+      {
+        label: 'ระดับความปวด',
+        data: [1, 2, 3, 4, 5, 6],
+        backgroundColor: color,
+        borderWidth: 1,
+      },
+    ],
+  }
 
-  // const data180 = {
-  //   labels: checkLabels(),
-  //   datasets: [
-  //     {
-  //       label: 'ระดับความปวด',
-  //       data: [1, 2, 3, 4, 5, 6, 10, 12, 13],
-  //       backgroundColor: ['rgba(75, 192, 192, 1)'],
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // }
+  const data180 = {
+    labels: checkLabels(),
+    datasets: [
+      {
+        label: 'ระดับความปวด',
+        data: [1, 2, 3, 4, 5, 6, 10, 12, 13],
+        backgroundColor: color,
+        borderWidth: 1,
+      },
+    ],
+  }
 
   const options = {
     scales: {
@@ -210,22 +256,22 @@ export function App() {
 
   const LevelData = [
     {
-      level: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Smile_Image.png',
+      level: require('../src/images/green.png'),
       color: 'rgba(12, 139, 74, 1)',
       value: mood0,
     },
     {
-      level: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Smile_Image.png',
+      level: require('../src/images/blue.png'),
       color: 'rgba(0, 76, 146, 1)',
       value: mood1,
     },
     {
-      level: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Smile_Image.png',
+      level: require('../src/images/yellow.png'),
       color: 'rgba(255, 218, 112, 1)',
       value: mood2,
     },
     {
-      level: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Smile_Image.png',
+      level: require('../src/images/red.png'),
       color: 'rgba(144, 47, 0, 1)',
       value: mood3,
     },
@@ -240,7 +286,7 @@ export function App() {
               <div>
                 <img src={item?.level} width='20px' style={{ backgroundColor: item?.color, borderRadius: 50 }} />
               </div>
-              <div>{item?.value}</div>
+              <div style={{ color: item?.color, fontWeight: 'bold' }}>{item?.value}</div>
             </div>
           </>
         ))}
@@ -274,12 +320,12 @@ export function App() {
         </div>
 
         <div style={{ fontWeight: 'bold' }}>ปวดไมเกรน {getDays()} วัน</div>
-        <div style={{ fontWeight: 'bold' }}>
+        <div>
           {startMonth()} - {endMonth()}
         </div>
         <Bar
-          data={data}
-          // data={(isButton === 1 && data) || (isButton === 2 && data90) || (isButton === 3 && data180)}
+          // data={data}
+          data={(isButton === 1 && data) || (isButton === 2 && data90) || (isButton === 3 && data180)}
           options={options}
         />
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
